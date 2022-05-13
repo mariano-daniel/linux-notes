@@ -1,0 +1,36 @@
+So I was met with this issue when trying to apt and systemctl:
+
+Setting up exim4-daemon-light (4.92-8+deb10u6) ...
+Failed to reload daemon: Refusing to reload, not enough space available on /run/systemd. Currently, 0B are free, but a safety buffer of 16.0M is enforced.
+
+root@ip-172-31-45-48:/home/admin# df -ha
+Filesystem      Size  Used Avail Use% Mounted on
+sysfs              0     0     0    - /sys
+proc               0     0     0    - /proc
+udev            485M     0  485M   0% /dev
+devpts             0     0     0    - /dev/pts
+tmpfs            99M   99M     0 100% /run <--- 
+/dev/xvdf1       30G  4.4G   24G  16% /
+securityfs         0     0     0    - /sys/kernel/security
+tmpfs           494M     0  494M   0% /dev/shm
+tmpfs           5.0M     0  5.0M   0% /run/lock
+tmpfs           494M     0  494M   0% /sys/fs/cgroup
+
+So, I tried this and it seemed to work:
+
+# mount -o remount,size=3G /run
+
+Filesystem      Size  Used Avail Use% Mounted on
+sysfs              0     0     0    - /sys
+proc               0     0     0    - /proc
+udev            485M     0  485M   0% /dev
+devpts             0     0     0    - /dev/pts
+tmpfs           3.0G  100M  3.0G   4% /run <---
+/dev/xvdf1       30G  4.4G   24G  16% /
+securityfs         0     0     0    - /sys/kernel/security
+tmpfs           494M     0  494M   0% /dev/shm
+tmpfs           5.0M     0  5.0M   0% /run/lock
+tmpfs           494M     0  494M   0% /sys/fs/cgroup
+
+
+
